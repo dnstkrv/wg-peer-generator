@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>WireGuard Config Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="container">
+    <h1>WireGuard Config Generator</h1>
+
+    <div class="card">
+            Этот генератор позволяет создавать клиентские конфигурации WireGuard на основе существующего серверного конфига.
+            Вы можете загрузить серверный файл или вставить его содержимое вручную, добавить пиров и сгенерировать готовые конфиги для клиентов с ключами и QR-кодами
+    </div>
+
+    <div class="card">
+        <div class="file-input-wrapper">
+            <input type="file" id="server-file" accept=".conf">
+            <label for="server-file" class="file-label">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1z"/>
+                </svg>
+                <span>Загрузить конфиг</span>
+                <span class="file-status"></span>
+            </label>
+        </div>
+        <textarea id="server-config" rows="8" placeholder="Или вставьте конфигурацию сюда"></textarea>
+
+        <label>Адрес сервера (Endpoint)</label>
+        <input id="server-address" placeholder="vpn.example.com или 1.2.3.4">
+        <div class="alert" id="endpoint-alert">Endpoint пустой, клиентские конфиги не будут корректными</div>
+    </div>
+
+    <div class="card">
+        <button id="add-peer">Добавить пир</button>
+        <button id="generate">Сгенерировать конфиги</button>
+        <div id="peers"></div>
+    </div>
+
+    <div class="card" id="server-card">
+        <h3>Сервер</h3>
+        <pre id="server-output"></pre>
+    </div>
+
+    <div class="card" id="clients-card">
+        <h3>Клиенты</h3>
+        <div id="clients-output"></div>
+    </div>
+</div>
+
+<script type="module" src="app.js"></script>
+
+<script type="text/javascript">
+var sc_project=13195701; 
+var sc_invisible=1; 
+var sc_security="f44beed1"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js" async></script>
+<noscript><div class="statcounter"><a title="hit counter"
+href="https://statcounter.com/" target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/13195701/0/f44beed1/1/" alt="hit counter"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+
+</body>
+</html>

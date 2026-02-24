@@ -1,4 +1,5 @@
 import nacl from 'https://esm.sh/tweetnacl@1.0.3';
+import naclUtil from 'https://esm.sh/tweetnacl-util@0.15.1';
 import QRCode from 'https://esm.sh/qrcode@1.5.4';
 
 const serverConfig  = document.getElementById('server-config');
@@ -12,7 +13,6 @@ document.getElementById('add-peer').onclick = addPeer;
 document.getElementById('generate').onclick = generate;
 document.getElementById('server-file').onchange = loadFile;
 
-function b64(u8) { return btoa(String.fromCharCode(...u8)); }
 function ipToInt(ip) { return ip.split('.').reduce((a,v)=> (a<<8)+Number(v), 0) >>> 0; }
 function intToIp(int) { return [(int>>>24)&255,(int>>>16)&255,(int>>>8)&255,int&255].join('.'); }
 
@@ -24,9 +24,13 @@ function parse(cfg) {
         if (l === '[Interface]') cur = out.Interface;
         else if (l === '[Peer]') out.Peers.push(cur = {});
         else if (l && !l.startsWith('#') && cur) {
-            const [k,v] = l.split('=').map(s=>s.trim());
-            cur[k] = v;
-        }
+            const i = l.indexOf('=');
+              if (i !== -1) {
+              const k = l.slice(0, i).trim();
+              const v = l.slice(i + 1).trim();
+              cur[k] = v;
+              }
+            }
     });
     return out;
 }
@@ -74,9 +78,9 @@ function addPeer() {
     div.querySelector('.gen').onclick = () => {
         const kp = nacl.box.keyPair();
         const psk = nacl.randomBytes(32);
-        div.dataset.priv = b64(kp.secretKey);
-        div.querySelector('.pub').value = b64(kp.publicKey);
-        div.querySelector('.psk').value = b64(psk);
+        div.dataset.priv = naclUtil.encodeBase64(kp.secretKey);
+        div.querySelector('.pub').value = naclUtil.encodeBase64(kp.publicKey);
+        div.querySelector('.psk').value = naclUtil.encodeBase64(psk);
     };
     peersEl.appendChild(div);
 }
@@ -88,7 +92,7 @@ function generate() {
     let serverPubKey = parsed.Interface.PublicKey;
     if(!serverPubKey && parsed.Interface.PrivateKey){
         const privBytes = Uint8Array.from(atob(parsed.Interface.PrivateKey), c=>c.charCodeAt(0));
-        serverPubKey = b64(nacl.box.keyPair.fromSecretKey(privBytes).publicKey);
+        serverPubKey = naclUtil.encodeBase64(nacl.box.keyPair.fromSecretKey(privBytes).publicKey);
     }
 
     let serverOut = '[Interface]\n';
@@ -110,13 +114,13 @@ function generate() {
 
         if(!pub || !priv){
             const kp = nacl.box.keyPair();
-            priv = b64(kp.secretKey);
-            pub  = b64(kp.publicKey);
+            priv = naclUtil.encodeBase64(kp.secretKey);
+            pub  = naclUtil.encodeBase64(kp.publicKey);
             p.dataset.priv = priv;
             p.querySelector('.pub').value = pub;
         }
         if(!psk){
-            psk = b64(nacl.randomBytes(32));
+            psk = naclUtil.encodeBase64(nacl.randomBytes(32));
             p.querySelector('.psk').value = psk;
         }
 
